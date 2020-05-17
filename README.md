@@ -63,3 +63,11 @@ dados em uma base H2.
   - ReflectionApplication 
     - É a classe principal onde é executado um teste simples de escrita e leitura dos dados através da estrutura descrita 
     acima.
+
+
+- Executando API
+
+    Para ver o funcionamento basta executar a classe principal, será exibido no console os dados gravados no banco H2.
+    Também é possível acessar o banco de dados através do link http://localhost:8080/h2-console/login.jsp as credenciais
+    de acessos estão definidas no arquivo resources/application.properties.
+    É interessante utilizar a função debug e entender passo a passo como a API funciona.
