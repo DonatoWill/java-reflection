@@ -5,6 +5,7 @@ import com.example.reflection.util.MetaModel;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class EntityManagerImpl<T> implements EntityManager<T> {
@@ -22,7 +23,7 @@ public class EntityManagerImpl<T> implements EntityManager<T> {
     @Override
     public T find(Class<T> tClass, Object primaryKey) throws SQLException, InstantiationException,
             IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        MetaModel metaModel = MetaModel.of(tClass.getClass());
+        MetaModel metaModel = MetaModel.of(tClass);
         String sql = metaModel.buildSelectRequest();
         PreparedStatement statement = prepareStatementWith(sql).selectParameters(primaryKey);
         ResultSet resultSet = statement.executeQuery();
@@ -46,7 +47,21 @@ public class EntityManagerImpl<T> implements EntityManager<T> {
             // t é a instancia que desejamos alterar o valor
             primaryKeyField.set(t, primaryKey);
         }
-        return null;
+
+        List<ColumnField> columnFields = metaModel.getColumns();
+        for(ColumnField columnField : columnFields){
+            Field field = columnField.getField();
+            field.setAccessible(true);
+            Class<?> columnType = columnField.getType();
+            String columnName = columnField.getName();
+            if(columnType == int.class){
+                field.set(t, resultSet.getInt(columnName));
+            }else if(columnType == String.class){
+                field.set(t, resultSet.getString(columnName));
+            }
+        }
+
+        return t;
     }
 
     private PreparedStatementWrapper prepareStatementWith(String sql) throws SQLException {

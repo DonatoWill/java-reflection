@@ -41,11 +41,6 @@ public class MetaModel<T> {
                 columnFields.add(columnField);
             }
         }
-        List<ColumnField> columns =
-        Arrays.stream(classe.getDeclaredFields())
-                .filter(field -> field.getAnnotation(Column.class) != null)
-                .map(f-> new ColumnField(f))
-                .collect(Collectors.toList());
         return columnFields;
     }
 

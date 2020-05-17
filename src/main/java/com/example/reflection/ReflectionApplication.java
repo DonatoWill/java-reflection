@@ -8,6 +8,7 @@ import com.example.reflection.util.PrimaryKeyField;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 @SpringBootApplication
 public class ReflectionApplication {
 
-	public static void main(String[] args) throws SQLException, IllegalAccessException {
+	public static void main(String[] args) throws SQLException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
 		SpringApplication.run(ReflectionApplication.class, args);
 
 		MetaModel<Person> metaModel = MetaModel.of(Person.class);
@@ -42,9 +43,10 @@ public class ReflectionApplication {
 
 		writingObjects(people);
 		System.out.println("");
+		System.out.println("Consultando..");
+		Person selectedPerson = readingObject(people.get(0).getId());
 		System.out.println("");
-
-
+		System.out.println(selectedPerson);
 	}
 
 	private static void writingObjects(List<Person> people) throws SQLException, IllegalAccessException {
@@ -63,10 +65,10 @@ public class ReflectionApplication {
 		people.forEach(person -> System.out.println(person));
 	}
 
-	private static Person readingObject(Long id){
+	private static Person readingObject(Long id) throws InvocationTargetException, SQLException, InstantiationException,
+			NoSuchMethodException, IllegalAccessException {
 		EntityManager<Person> entityManager = EntityManager.of(Person.class);
-
-		return null; // entityManager.find(Person.class, id);
+		return entityManager.find(Person.class, id);
 	}
 
 }
