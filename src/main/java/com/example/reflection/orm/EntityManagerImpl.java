@@ -3,6 +3,7 @@ package com.example.reflection.orm;
 import com.example.reflection.util.ColumnField;
 import com.example.reflection.util.MetaModel;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,7 +20,8 @@ public class EntityManagerImpl<T> implements EntityManager<T> {
     }
 
     @Override
-    public T find(Class<T> tClass, Object primaryKey) throws SQLException, InstantiationException, IllegalAccessException {
+    public T find(Class<T> tClass, Object primaryKey) throws SQLException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         MetaModel metaModel = MetaModel.of(tClass.getClass());
         String sql = metaModel.buildSelectRequest();
         PreparedStatement statement = prepareStatementWith(sql).selectParameters(primaryKey);
@@ -27,9 +29,10 @@ public class EntityManagerImpl<T> implements EntityManager<T> {
         return buildInstanceFrom(tClass, resultSet);
     }
 
-    private T buildInstanceFrom(Class<T> tClass, ResultSet resultSet) throws IllegalAccessException, InstantiationException, SQLException {
+    private T buildInstanceFrom(Class<T> tClass, ResultSet resultSet) throws IllegalAccessException,
+            InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException {
         MetaModel metaModel = MetaModel.of(tClass);
-        T t = tClass.newInstance();
+        T t = tClass.getConstructor().newInstance();
         Field primaryKeyField = metaModel.getPrimaryKey().getField();
         String primaryKeyColumnName = metaModel.getPrimaryKey().getName();
         Class<?> primaryKeyType = primaryKeyField.getType();
@@ -37,7 +40,10 @@ public class EntityManagerImpl<T> implements EntityManager<T> {
         //Aqui utilizamos o tipo primitivo pois pegamos direto do metamodelo e não foi feito wrapper para Long
         if(primaryKeyType == long.class){
             long primaryKey = resultSet.getInt(primaryKeyColumnName);
+            // Faz com que consigamos alterar o atributo privado, caso não seja alterado irá retornar
+            // IllegalAccessException, porém ele não latera o atributos para public
             primaryKeyField.setAccessible(true);
+            // t é a instancia que desejamos alterar o valor
             primaryKeyField.set(t, primaryKey);
         }
         return null;

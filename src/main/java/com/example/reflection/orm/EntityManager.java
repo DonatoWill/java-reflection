@@ -1,5 +1,6 @@
 package com.example.reflection.orm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
 public interface EntityManager<T> {
@@ -10,5 +11,6 @@ public interface EntityManager<T> {
 
     void persist(T t) throws SQLException, IllegalAccessException;
 
-    T find(Class<T> personClass, Object primaryKey) throws SQLException, InstantiationException, IllegalAccessException;
+    T find(Class<T> personClass, Object primaryKey) throws SQLException, InstantiationException, IllegalAccessException,
+            NoSuchMethodException, InvocationTargetException;
 }

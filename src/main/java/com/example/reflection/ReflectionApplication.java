@@ -50,10 +50,15 @@ public class ReflectionApplication {
 
 		EntityManager<Person> entityManager = EntityManager.of(Person.class);
 		people.forEach(person -> System.out.println(person));
+
+		System.out.println("");
 		System.out.println("Gravando no banco");
+		System.out.println("");
+
 		for (Person person : people) {
 			entityManager.persist(person);
 		}
+
 		people.forEach(person -> System.out.println(person));
 	}
 

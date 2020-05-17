@@ -58,7 +58,8 @@ public class MetaModel<T> {
                 .mapToObj(index-> "?")
                 .collect(Collectors.joining(", "));
 
-        return "INSERT INTO " + this.classe.getSimpleName() + " (" + columnElement + ")" + "VALUES (" + marcadoresParametros + ")";
+        return "INSERT INTO " + this.classe.getSimpleName() + " (" + columnElement + ")" +
+                "VALUES (" + marcadoresParametros + ")";
 
     }
 
