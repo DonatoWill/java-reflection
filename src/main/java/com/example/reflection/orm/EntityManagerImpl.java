@@ -110,6 +110,7 @@ public class EntityManagerImpl<T> implements EntityManager<T> {
         }
 
         public PreparedStatement selectParameters(Object primaryKey) throws SQLException {
+            //Aqui utilizamos o objeto Long pois ao passar por parametro foi feito wrapper para Long
             if(primaryKey.getClass() == Long.class){
                 statement.setLong(1, (Long) primaryKey);
             }
